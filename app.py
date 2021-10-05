@@ -49,10 +49,7 @@ def checkout():
 
   # Create payment intent since price and item already known
   # Return client_secret as part of checkout.html for it to be used later.
-  paymentIntent = stripe.PaymentIntent.create(
-		amount=amount,
-		currency="SGD"
-	)
+  paymentIntent = stripe.PaymentIntent.create(amount=amount,currency="SGD")
   return render_template('checkout.html', title=title, amount=amount, error=error, client_secret=paymentIntent.client_secret)
 
 # Success route

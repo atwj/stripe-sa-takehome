@@ -24,6 +24,7 @@ var stripe = Stripe('pk_test_51JgquZFrYPN0ETfkDxQJYYuxnMB7znIdf5gWrwzXekEU2wrEre
         var form = document.getElementById('payment-form');
         form.addEventListener('submit', function(ev) {
             ev.preventDefault();
+            document.getElementById("payment-processing-overlay").style.display = "block"
             // If the client secret was rendered server-side as a data-secret attribute
             // on the <form> element, you can retrieve it here by calling `form.dataset.secret`
             stripe.confirmCardPayment(form.dataset.secret, {
@@ -44,6 +45,7 @@ var stripe = Stripe('pk_test_51JgquZFrYPN0ETfkDxQJYYuxnMB7znIdf5gWrwzXekEU2wrEre
                     // execution. Set up a webhook or plugin to listen for the
                     // payment_intent.succeeded event that handles any business critical
                     // post-payment actions.
+                    // $(document).getElementById("payment-processing-overlay").style.display = "none"
                     window.location.href = "/success" + '?pid=' + result.paymentIntent.id
                     
                 }
