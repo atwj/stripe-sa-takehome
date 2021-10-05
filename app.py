@@ -3,8 +3,17 @@ import stripe
 
 from dotenv import load_dotenv
 from flask import Flask, request, render_template
+from stripe.api_resources import payment_intent
+import json
 
 load_dotenv()
+
+# Configure stripe with API key
+secret_key = os.environ.get("STRIPE_SECRET_KEY")
+if secret_key:
+	stripe.api_key = secret_key
+else:
+	raise ValueError("STRIPE_SECRET_KEY not set.")
 
 app = Flask(__name__,
   static_url_path='',
@@ -38,12 +47,20 @@ def checkout():
     # Included in layout view, feel free to assign error
     error = 'No item selected'
 
-  return render_template('checkout.html', title=title, amount=amount, error=error)
+  # Create payment intent since price and item already known
+  # Return client_secret as part of checkout.html for it to be used later.
+  paymentIntent = stripe.PaymentIntent.create(
+		amount=amount,
+		currency="SGD"
+	)
+  return render_template('checkout.html', title=title, amount=amount, error=error, client_secret=paymentIntent.client_secret)
 
 # Success route
 @app.route('/success', methods=['GET'])
 def success():
-  return render_template('success.html')
+	payment_intent_id = request.args.get('pid')
+	payment_intent = stripe.PaymentIntent.retrieve(payment_intent_id)
+	return render_template('success.html', amount=payment_intent.amount, charge_id=payment_intent.charges.data[0].id)
 
 
 if __name__ == '__main__':
