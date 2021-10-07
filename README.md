@@ -1,14 +1,20 @@
 # About
-This is a simple e-commerce application forked from [https://github.com/marko-stripe/sa-takehome-project-python](https://github.com/marko-stripe/sa-takehome-project-python). It is essentially an site that allows site users to select a book and pay for it using Stripe's payment gateway. 
+This is a simple e-commerce application forked from [https://github.com/marko-stripe/sa-takehome-project-python](https://github.com/marko-stripe/sa-takehome-project-python). 
+It is essentially a site that allows site users to select a book and pay for it using Stripe's payment gateway. 
 
-As part of the Solution Architect assessment, my task was to integrate Stripe with this application in order to provide the payment functionality. The following sections will cover how the application works, how I approached this problem and overcome challenges faced in this process before ending it off with a summary on how this application could be made more robust. 
+As part of the Solution Architect assessment, my task was to integrate Stripe with this application in order 
+to provide the payment functionality. The following sections will cover how the application works, how I approached 
+this problem and overcome challenges faced in this process before ending it off with a summary on how this application 
+could be made more robust. 
 
 # Application Overview
 
 ## What's in the box
 - The backend service is written in Python using the [Flask framework](https://flask.palletsprojects.com/).
 - The frontend is styled with [Bootstrap](https://getbootstrap.com/docs/4.6/getting-started/introduction/) CSS framework.
-- The Payment functionality is provided by Stripe, using the [`PaymentIntents`](https://stripe.com/docs/api/payment_intents) API and [Stripe Elements](https://stripe.com/docs/js/elements_object/create_element?type=card) to collect payment details and facilitate the transaction.
+- The Payment functionality is provided by Stripe, using the [`PaymentIntents`](https://stripe.com/docs/api/payment_intents) 
+API and [Stripe Elements](https://stripe.com/docs/js/elements_object/create_element?type=card) to collect payment details 
+and facilitate the payment.
 
 ## How it works
 
@@ -29,7 +35,8 @@ followed the instructions (installing dependencies, retrieving the test API keys
 
 Immediately, I noticed that the payment feature was not in place and made a mental note to implement that in due course.
 
-Next, I looked into the existing source code to understand how the application was put together. Here are some things that I observed:
+Next, I looked into the existing source code to understand how the application was put together. Here are some things that 
+I observed:
 1. There is a `/checkout` route and `/success` route already defined in `app.py`. This should be where I will implement the server side logic for the payment functionality.
 2. The .env file does not seem to be loading the publishable and secret API keys correctly. I will have to fix that.
 3. The available book selections are hardcoded into the view. I may want to refactor that later.
@@ -41,13 +48,19 @@ Now that the application is running, I had to figure out the following items:
 3) What is the right way to use both Stripe Elements and the various Stripe API(s) together in order faciliate payment.
 
 I decided that I would start by looking at the available guides provided by Stripe. This proved to be extremely helpful
-as I found the exact codes needed for this to work. Here is the [link](https://stripe.com/docs/payments/accept-a-payment?platform=web&ui=elements) 
-to the said guide. 
+as I found the exact codes needed for this to work. 
+Here is the [link](https://stripe.com/docs/payments/accept-a-payment?platform=web&ui=elements) to the said guide. 
 
-Moreover, I understood how the `PaymentIntent` API was to be used as well as the interactions required between the customer,
-client, e-commerce backend and Stripe for a payment to happen.
+More importantly, I understood how the `PaymentIntent` API was to be used as well as the interactions required between the customer,
+client, e-commerce backend and Stripe for a payment to happen.   
 
 ![PaymentIntent usage](https://b.stripecdn.com/docs-srv/assets/accept-a-payment-web.3c58b380538c59796acc587164c05365.png)
+
+What I found fascinating was that the second leg of the interaction where the customer had to confirm the payment need 
+not go through the server, but directly to Stripe. I believe that this is by design because if the server were to receive card 
+information, this would result in security and regulatory challenges that had to be addressed. For example, ensuring that card information was not 
+cached or stored server side and ensuring that the application complies with prevailing guidelines like PCI DSS.
+
 
 ### Step 3: Make it work well.
 With the help of the [guide](https://stripe.com/docs/payments/accept-a-payment?platform=web&ui=elements), the implementation 
@@ -61,9 +74,42 @@ error message informing the customer to try again later.
 
 ### Step 4: Refactor.
 
-### Challenges
-1. Unable to get charge ID from success payload in the frontend.
-2. 
+### Challenges Faced
+There was only one challenge that I faced while implementing the payments feature. I could not retrieve the charge ID from the
+result of calling `stripe.confirmCardPayment(...)` in `checkout.js`
+
+    stripe.confirmCardPayment(form.dataset.secret, {
+        payment_method: {
+            card: card
+        }
+    }).then(function(result) {
+        console.log(result.charges) // result.charges not found.         
+    })
+
+My immediate suspicions were:
+1. There could be a delay between payment confirmation and the creation of a `charge` record.
+
+To test this, I started by checking the payments tab in the Stripe dashbord to see if an event log was available. Sure enough,
+there was a event log under the "Event and Logs" section. There I observed that a `charge` is created no more than 2 seconds after the payment is confirmed.
+Therefore, to test whether the cause of this issue was due to a delay, I decided to check for the `charge` object only 5 seconds
+after the payment has been confirmed (i.e when the javascript Promise was resolved).
+
+    stripe.confirmCardPayment(form.dataset.secret, {
+        payment_method: {
+            card: card
+        }
+    }).then(function(result) { //When Promise is resolved
+        setTimeout(function(){ // Wait for 5000 ms before executing console.log(result.charges)
+            console.log(result.charges) 
+        }, 5000);        
+    })
+
+However, there was still no `charge` object being returned. Thus I concluded that it is likely `charge` is not being returned in this
+`PaymentIntents` object. 
+
+2. Perhaps certain fields were only available depending on whether a publishable API key or secret API key was used.
+
+
 
 ## How do I scale this up?
 1. Decoupling frontend from backend
