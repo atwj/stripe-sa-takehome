@@ -20,7 +20,7 @@ class Book:
         return self._author
     
     @property
-    def author(self):
+    def desc(self):
         return self._desc
     
     @property
@@ -30,3 +30,13 @@ class Book:
     @property
     def image_path(self):
         return self._image_path
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "title": self.title,
+            "author": self.author,
+            "desc": self.desc,
+            "amount": self.amount,
+            "image_path": self.image_path
+        }

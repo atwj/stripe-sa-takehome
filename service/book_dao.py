@@ -4,7 +4,7 @@ from model import Book
 _books_db = {
     "1" : Book(1, "The Art of Doing Science and Engineering", 
             "Richard Hamming", 
-            "The Art of Doing Science and Engineering is a reminder that a childlike capacity for learning and creativity are accessible to everyone",
+            "The Art of Doing Science and Engineering is a reminder that a childlike capacity for learning and creativity are accessible to everyone.",
             2300,
             "/images/art-science-eng.jpg"
         ),
@@ -23,7 +23,7 @@ _books_db = {
 }
 
 def get_all_books():
-    return _books_db
+    return [book.to_dict() for book in _books_db.values()]
 
 def get_book_by_id(id):
     return _books_db.get(id, None)

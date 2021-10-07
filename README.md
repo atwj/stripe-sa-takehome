@@ -39,7 +39,7 @@ Next, I looked into the existing source code to understand how the application w
 I observed:
 1. There is a `/checkout` route and `/success` route already defined in `app.py`. This should be where I will implement the server side logic for the payment functionality.
 2. The .env file does not seem to be loading the publishable and secret API keys correctly. I will have to fix that.
-3. The available book selections are hardcoded into the view. I may want to refactor that later.
+3. The available book selections are hardcoded into the view as well as in `app.py`. I may want to refactor that later.
 
 ### Step 2: Complete the task.
 Now that the application is running, I had to figure out the following items:
@@ -73,6 +73,10 @@ that the payment was being processed as soon as the "pay" button was clicked.
 error message informing the customer to try again later.   
 
 ### Step 4: Refactor.
+Now that the application is working as per requirement, the only remaining step is to clean up the code and refactor it so that new features can be added easily. 
+In this case, I moved the books definition into its own class with its own access layer. I also rewrote the `index.html` page so that books are rendered dynamically. This result in 
+less repeated code throughout the application.
+
 
 ### Challenges Faced
 There was only one challenge that I faced while implementing the payments feature. I could not retrieve the charge ID from the

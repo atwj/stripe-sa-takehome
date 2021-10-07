@@ -5,6 +5,7 @@ from flask import Flask, request, render_template, redirect
 
 from service import book_dao
 from model.book import Book
+import json
 
 load_dotenv()
 
@@ -27,7 +28,8 @@ app = Flask(__name__,
 # Home route
 @app.route('/', methods=['GET'])
 def index():
-	return render_template('index.html')
+	all_books = book_dao.get_all_books()
+	return render_template('index.html', books=all_books)
 
 # Checkout route
 @app.route('/checkout', methods=['GET'])
@@ -45,7 +47,6 @@ def checkout():
 	return render_template('checkout.html', 
 								title=book.title, 
 								amount=book.amount, 
-								# error=error, 
 								client_secret=payment_intent.client_secret,
 								publishable_api_key=publishable_key
 							)
