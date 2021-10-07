@@ -1,6 +1,9 @@
 {% extends 'layouts/main.html' %}
 
 {% block content %}
+<script> var stripe = Stripe('{{ publishable_api_key }}'); </script>
+<script src="js/checkout.js"></script>
+<link rel="stylesheet" href="/css/checkout.css">
 <div class="row justify-content-md-center">
   <div class="col-6">
     <div class="text-center mt-40">
@@ -16,20 +19,29 @@
       </div>
     </div>
     <div class="card box-shadow mt-40">
+      <div id="payment-processing-overlay" class="text-center overlay-card" style="display: none;">
+        <div>
+          <p>Processing Payment</p>
+        </div>
+        <div class="spinner-border" role="status">
+          <span class="sr-only">Loading...</span>
+        </div>
+      </div>
       <div class="card-body">
-        <form name="payment-form">
+        <form id="payment-form" data-secret="{{ client_secret }}">
           <div>
             <label for="email">Email address</label>
             <input type="email" class="form-control" id="email" name="email" placeholder="you@email.com">
           </div>
-          <div class="mt-20 text-center text-secondary border-placeholder">
-            Add Stripe Element here!
-          </div>
+          <div id="stripe-card-element" class="mt-20 text-center text-secondary"></div>
           <div class="mt-20">
             <button type="submit" class="btn btn-lg btn-block btn-primary">Pay $<span class="amount" data-amount="{{ amount }}"></span></button>
           </div>
         </form>
       </div>
+    </div>
+    <div id="payment-error" class="text-center" style="display: none;">
+      <p>Something went wrong, please try again later</p>
     </div>
   </div>
 </div>
