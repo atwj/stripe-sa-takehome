@@ -1,10 +1,30 @@
+## Install and Run
+To get started, clone the repository and run pip3 to install dependencies:
+
+```
+git clone  && cd 
+pip3 install -r requirements.txt
+```
+
+Replace `STRIPE_SECRET_KEY` and `STRIPE_PUBLISHABLE_KEY` in `.env` with your Stripe account's test API keys.
+
+Then run the application locally:
+
+```
+flask run
+```
+
+Navigate to [http://localhost:5000](http://localhost:5000) to view the index page.
+
+------
+
 # About
 This is a simple e-commerce application forked from [https://github.com/marko-stripe/sa-takehome-project-python](https://github.com/marko-stripe/sa-takehome-project-python). 
 It is essentially a site that allows site users to select a book and pay for it using Stripe's payment gateway. 
 
 As part of the Solution Architect assessment, my task was to integrate Stripe with this application in order 
 to provide the payment functionality. The following sections will cover how the application works, how I approached 
-this problem and overcome challenges faced in this process before ending it off with a summary on how this application 
+this problem and overcame challenges faced in this process before ending it off with a summary on how this application 
 could be made more robust. 
 
 # Application Overview
@@ -81,7 +101,7 @@ less repeated code throughout the application.
 
 
 ### Challenges Faced
-There was only one challenge that I faced while implementing the payments feature. I could not retrieve the charge ID from the
+The main challenge encountered while implementing the payments feature was retrieving the charge ID from the
 result of calling `stripe.confirmCardPayment(...)` in `checkout.js` after the payment has been confirmed.
 
     stripe.confirmCardPayment(form.dataset.secret, {
@@ -92,7 +112,7 @@ result of calling `stripe.confirmCardPayment(...)` in `checkout.js` after the pa
         console.log(result.charges) // result.charges not found.         
     })
 
-My immediate suspicions were:
+I could think of 2 possible reasons:
 #### 1. There could be a delay between payment confirmation and the creation of a `charge` record.
 
 To test this, I started by checking the payments tab in the Stripe dashbord to see if an event log was available. Sure enough,
@@ -155,23 +175,4 @@ are maintained and deployed separately. The benefits from doing so include:
 2. The ability to the scale the client-side or server side deployment out or in independently depending on traffic.
 3. The ability to add new front-ends (i.e mobile applications) or further decompose the backend for better maintainability and performance (i.e microservices,
 event-driven architectures.)
-
-
-## Install and Run
-To get started, clone the repository and run pip3 to install dependencies:
-
-```
-git clone  && cd 
-pip3 install -r requirements.txt
-```
-
-Replace `STRIPE_SECRET_KEY` and `STRIPE_PUBLISHABLE_KEY` in `.env` with your Stripe account's test API keys.
-
-Then run the application locally:
-
-```
-flask run
-```
-
-Navigate to [http://localhost:5000](http://localhost:5000) to view the index page.
 
