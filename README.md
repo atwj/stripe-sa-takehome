@@ -76,7 +76,7 @@ error message informing the customer to try again later.
 
 ### Challenges Faced
 There was only one challenge that I faced while implementing the payments feature. I could not retrieve the charge ID from the
-result of calling `stripe.confirmCardPayment(...)` in `checkout.js`
+result of calling `stripe.confirmCardPayment(...)` in `checkout.js` after the payment has been confirmed.
 
     stripe.confirmCardPayment(form.dataset.secret, {
         payment_method: {
@@ -87,13 +87,14 @@ result of calling `stripe.confirmCardPayment(...)` in `checkout.js`
     })
 
 My immediate suspicions were:
-1. There could be a delay between payment confirmation and the creation of a `charge` record.
+#### 1. There could be a delay between payment confirmation and the creation of a `charge` record.
 
 To test this, I started by checking the payments tab in the Stripe dashbord to see if an event log was available. Sure enough,
-there was a event log under the "Event and Logs" section. There I observed that a `charge` is created no more than 2 seconds after the payment is confirmed.
+there was an event log under the "Event and Logs" section. There I observed that a `charge` is created no more than 2 seconds after the payment is confirmed.
 Therefore, to test whether the cause of this issue was due to a delay, I decided to check for the `charge` object only 5 seconds
 after the payment has been confirmed (i.e when the javascript Promise was resolved).
 
+    // checkout.js
     stripe.confirmCardPayment(form.dataset.secret, {
         payment_method: {
             card: card
@@ -104,15 +105,48 @@ after the payment has been confirmed (i.e when the javascript Promise was resolv
         }, 5000);        
     })
 
-However, there was still no `charge` object being returned. Thus I concluded that it is likely `charge` is not being returned in this
-`PaymentIntents` object. 
+However, there was still no `charge` object being returned. Thus I concluded that it is likely information about `charge` 
+is not being returned at all in this `PaymentIntents` object when using Stripe.js . 
 
-2. Perhaps certain fields were only available depending on whether a publishable API key or secret API key was used.
+#### 2. Perhaps certain fields were only available depending on whether a publishable API key or secret API key was used.
+Now armed with a new hypothesis, I decided to try retrieving the `charge` details using the Python Stripe SDK. To test this,
+I left the code implementation in `checkout.js` as is and added an implementation in the `app.py` that would print out the 
+`charge` object immediately after payment is confirmed.
+    
+    // checkout.js
+    stripe.confirmCardPayment(form.dataset.secret, {
+        payment_method: {
+            card: card
+        }
+    }).then(function(result) { 
+        window.location.href = "/success" + '?pid=' + result.paymentIntent.id // calls /success route with the payment intent ID 
+        setTimeout(function(){ // Wait for 5000 ms before executing console.log(result.charges)
+            console.log(result.charges) // result.charges not found
+        }, 5000);        
+    })
 
+    # app.py
+    # Success route
+    @app.route('/success', methods=['GET'])
+    def success():
+        payment_intent_id = request.args.get('pid') # Retrieves payment intent ID from query parameter
+        payment_intent = stripe.PaymentIntent.retrieve(payment_intent_id)
+        print(payment_intent.charges) # charges was FOUND
+        return render_template('success.html')
 
+What I found was that the `charge` created upon payment confirmation was retrievable in the Python example, but not in the Javascript example. The only other difference between 
+these two SDKs was that the javascript SDK was configured with the publishable API key, while the python SDK was configured with the secret API key. 
+Upon checking the documentation for `PaymentIntents` again, I realized that certain fields were annotated with "RETRIEVABLE WITH PUBLISHABLE KEY". I also noticed
+that Stripe.js was intended to be used in client-side code exclusively and only accepts the publishable API key. This likely means that the type of API key used
+may result in different fields being returned. I belive that this is likely a security related design.
 
-## How do I scale this up?
-1. Decoupling frontend from backend
+## How do I make this application more robust?
+A pragmatic way to scale up this application would be to decouple the front-end code and the backend code. This results in two code bases that
+are maintained and deployed separately. The benefits from doing so include:
+1. Increased agility and ease of adding new features to either front-end or back-end.
+2. The ability to the scale the client-side or server side deployment out or in independently depending on traffic.
+3. The ability to add new front-ends (i.e mobile applications) or further decompose the backend for better maintainability and performance (i.e microservices,
+event-driven architectures.)
 
 
 ## Install and Run
