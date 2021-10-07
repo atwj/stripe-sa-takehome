@@ -1,21 +1,22 @@
 # About
-This is a simple e-commerce application that a customer can use to purchase a book. The payments functionality has been implemented using Stripe's API. This project was forked from [https://github.com/marko-stripe/sa-takehome-project-python](https://github.com/marko-stripe/sa-takehome-project-python)
+This is a simple e-commerce application forked from [https://github.com/marko-stripe/sa-takehome-project-python](https://github.com/marko-stripe/sa-takehome-project-python). It is essentially an site that allows site users to select a book and pay for it using Stripe's payment gateway. 
+
+As part of the Solution Architect assessment, my task was to integrate Stripe with this application in order to provide the payment functionality. The following sections will cover how the application works, how I approached this problem and overcome challenges faced in this process before ending it off with a summary on how this application could be made more robust. 
 
 # Application Overview
 
 ## What's in the box
 - The backend service is written in Python using the [Flask framework](https://flask.palletsprojects.com/).
 - The frontend is styled with [Bootstrap](https://getbootstrap.com/docs/4.6/getting-started/introduction/) CSS framework.
-- Payment functionality is provided by Stripe, using the following APIs:
-  - A
-  - B
-  - C
+- The Payment functionality is provided by Stripe, using the following APIs and libraries:
+  - [`PaymentIntents`](https://stripe.com/docs/api/payment_intents)
+  - [Stripe Elements]
 
 ## How it works
 
 Sequence Diagram
-1. Clicking on item (booK)
-2. Payment intent is created
+1. User clicks on the book to purchased
+2. This makes a POST /checkout/
 3. User is routed to checkout page to complete payment
 4. If payment suceeds, route to success page, with payment intent ID in the path parameter.
 5. Charge ID is retrieved and shown to user.
