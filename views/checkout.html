@@ -1,6 +1,7 @@
 {% extends 'layouts/main.html' %}
 
 {% block content %}
+<script> var stripe = Stripe('{{ publishable_api_key }}'); </script>
 <script src="js/checkout.js"></script>
 <link rel="stylesheet" href="/css/checkout.css">
 <div class="row justify-content-md-center">

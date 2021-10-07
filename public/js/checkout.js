@@ -1,17 +1,11 @@
-var stripe = Stripe('pk_test_51JgquZFrYPN0ETfkDxQJYYuxnMB7znIdf5gWrwzXekEU2wrEreEpI17rsqIR6USxUePORqdjVAF0ZQDj6IDuk4im00STkouwWY');
 (function(){
     'use strict';
-    
-
     var elements = stripe.elements({
         fonts: [
         {
             cssSrc: 'https://fonts.googleapis.com/css?family=Roboto',
         },
         ],
-        // Stripe's examples are localized to specific languages, but if
-        // you wish to have Elements automatically detect your user's locale,
-        // use `locale: 'auto'` instead.
         locale: 'auto'
     });
 
