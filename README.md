@@ -1,5 +1,5 @@
 # Take home project
-This is a simple e-commerce application based that a customer can use to purchase a book. The payments functionality has been implemented using Stripe's API. This project was forked from [https://github.com/marko-stripe/sa-takehome-project-python](https://github.com/marko-stripe/sa-takehome-project-python)
+This is a simple e-commerce application that a customer can use to purchase a book. The payments functionality has been implemented using Stripe's API. This project was forked from [https://github.com/marko-stripe/sa-takehome-project-python](https://github.com/marko-stripe/sa-takehome-project-python)
 
 ## Application overview
 This demo is written in Python with the [Flask framework](https://flask.palletsprojects.com/). You'll need to retrieve a set of testmode API keys from the Stripe dashboard (you can create a free test account [here](https://dashboard.stripe.com/register)) to run this locally.
@@ -7,6 +7,12 @@ This demo is written in Python with the [Flask framework](https://flask.palletsp
 We're using the [Bootstrap](https://getbootstrap.com/docs/4.6/getting-started/introduction/) CSS framework. It's the most popular CSS framework in the world and is pretty easy to get started with — feel free to modify styles/layout if you like. 
 
 To simplify this project, we're also not using any database here, either. Instead `app.py` includes a simple case statement to read the GET params for `item`. 
+# Application Overview
+
+## What's in the box
+- The backend service is written in Python using the [Flask framework](https://flask.palletsprojects.com/).
+- The frontend is styled with [Bootstrap](https://getbootstrap.com/docs/4.6/getting-started/introduction/) CSS framework.
+- Payment functionality is provided by Stripe. You'll need to retrieve a set of testmode API keys from the Stripe dashboard (you can create a free test account [here](https://dashboard.stripe.com/register)) to run this locally.
 
 ## How it works
 
