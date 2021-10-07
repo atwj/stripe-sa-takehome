@@ -18,9 +18,11 @@ and facilitate the payment.
 
 ## How it works
 
-Sequence Diagram
-1. User clicks on a book to purchase.
-2. This makes a GET /checkout?item=book_id to the backend
+### Sequence Diagram
+![Sequence Diagram](/documentation/sd.png)
+
+1. Customer clicks on a book to purchase.
+2. This creates a GET /checkout?item=book_id request to the backend
 3. Backend creates a `PaymentIntent` object using Stripe's SDK with the amount and default currency (SGD).
 3. Backend returns a checkout page (checkout.html) displaying the selected book and price, with the PaymentIntent client secret embedded in the form to faciliate the transaction.
 4. User enters credit card details and confirms payment with stripe APIs
@@ -98,6 +100,8 @@ there was an event log under the "Event and Logs" section. There I observed that
 Therefore, to test whether the cause of this issue was due to a delay, I decided to check for the `charge` object only 5 seconds
 after the payment has been confirmed (i.e when the javascript Promise was resolved).
 
+![Event Log](/documentation/eventlog.png)
+
     // checkout.js
     stripe.confirmCardPayment(form.dataset.secret, {
         payment_method: {
@@ -157,11 +161,11 @@ event-driven architectures.)
 To get started, clone the repository and run pip3 to install dependencies:
 
 ```
-git clone https://github.com/marko-stripe/sa-takehome-project-python && cd sa-takehome-project-python
+git clone  && cd 
 pip3 install -r requirements.txt
 ```
 
-Rename `sample.env` to `.env` and populate it with your Stripe account's test API keys.
+Replace `STRIPE_SECRET_KEY` and `STRIPE_PUBLISHABLE_KEY` in `.env` with your Stripe account's test API keys.
 
 Then run the application locally:
 
