@@ -161,7 +161,7 @@ event-driven architectures.)
 To get started, clone the repository and run pip3 to install dependencies:
 
 ```
-git clone  && cd 
+git clone https://github.com/atwj/stripe-sa-takehome && cd stripe-sa-takehome
 pip3 install -r requirements.txt
 ```
 
