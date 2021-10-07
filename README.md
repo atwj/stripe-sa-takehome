@@ -39,7 +39,7 @@ and facilitate the payment.
 ## How it works
 
 ### Sequence Diagram
-![Sequence Diagram](/documentation/sd.png)
+![Sequence Diagram](/documentation/sd.svg)
 
 1. Customer clicks on a book to purchase.
 2. This creates a GET /checkout?item=book_id request to the backend
